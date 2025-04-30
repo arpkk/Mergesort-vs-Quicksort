@@ -30,9 +30,11 @@
 *.exe
 *.out
 *.app
+*.bin
 
 #vs code
 .vscode
 
 #compile
 src/main
+ordenar

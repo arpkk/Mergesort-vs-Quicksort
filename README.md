@@ -27,4 +27,5 @@ Este repositorio contiene una implementación en C++ de los algoritmos de **Merg
 
 1. **Compilar el Proyecto**
    ```bash
-   g++ ...
+   g++ src/main.cpp src/archivoBinario.cpp -o ordenar
+   ./ordenar
