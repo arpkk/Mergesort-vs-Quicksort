@@ -31,20 +31,26 @@ void crearArchivo(string nombre_archivo, int64_t cantidad_numeros){
 }
 
 
-vector<int64_t> crearArreglo(string nombre_archivo){
+vector<int64_t> leerEscribirBloque(string nombre_archivo, size_t B){
+
     ifstream archivo(nombre_archivo, ios::binary);
+
     if (!archivo.is_open()) {
         cerr << "Error al abrir el archivo.\n";
         return {};
     }
 
     vector<int64_t> arreglo;
-    int64_t numero;
+    int cantidad_por_bloque = B / sizeof(int64_t); //sizeof(int64_t) = 8
+    vector<int64_t> buffer(cantidad_por_bloque);
 
-    // leer mientras queden bloques de 8 bytes
-    while (archivo.read(reinterpret_cast<char*>(&numero), sizeof(int64_t))) {
-        arreglo.push_back(numero);
+    while (archivo.read(reinterpret_cast<char*>(buffer.data()), B)) {
+        arreglo.insert(arreglo.end(), buffer.begin(), buffer.end());
     }
+
+    // Manejar último bloque parcial
+    int leidos = archivo.gcount() / sizeof(int64_t);
+    arreglo.insert(arreglo.end(), buffer.begin(), buffer.begin() + leidos);
 
     archivo.close();
     return arreglo;
