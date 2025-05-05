@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 /*
@@ -44,8 +45,8 @@ void generarRuns(string archivo_entrada, size_t M, size_t B, vector<string>& arc
     entrada.close();
 }
 
-void mergeRuns(vector<string>& archivos_runs, string archivo_salida, size_t B) {
-    size_t k = archivos_runs.size(); //Cantidad de archivos temporales hay que mezclar -> k-way
+void mergeRuns(vector<string>& archivos_runs, string archivo_salida, size_t B, size_t a) {
+    size_t k = min(a, archivos_runs.size()); // Solo mezclar 'a' archivos a la vez
     vector<ifstream> inputs(k); //Se define ifstream para cada archivo
     vector<vector<int64_t>> buffers(k); //buffers para guardar bloques de tamaño B
     vector<size_t> indices(k, 0);//Indices de posicion dentro de cada buffers
@@ -96,8 +97,8 @@ void mergeRuns(vector<string>& archivos_runs, string archivo_salida, size_t B) {
     for (auto& in : inputs) in.close();
 }
 
-void mergesortExterno(string archivo_entrada, string archivo_salida, size_t M, size_t B) {
+void mergesortExterno(string archivo_entrada, string archivo_salida, size_t M, size_t B, size_t a) {
     vector<string> archivos_runs;
     generarRuns(archivo_entrada, M, B, archivos_runs);
-    mergeRuns(archivos_runs, archivo_salida, B);
+    mergeRuns(archivos_runs, archivo_salida, B, a);
 }
