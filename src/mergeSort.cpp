@@ -46,17 +46,16 @@ void generarRuns(string archivo_entrada, size_t M, size_t B, vector<string>& arc
 }
 
 void mergeRuns(vector<string>& archivos_runs, string archivo_salida, size_t B, size_t a) {
-    size_t k = min(a, archivos_runs.size()); // Solo mezclar 'a' archivos a la vez
-    vector<ifstream> inputs(k); //Se define ifstream para cada archivo
-    vector<vector<int64_t>> buffers(k); //buffers para guardar bloques de tamaño B
-    vector<size_t> indices(k, 0);//Indices de posicion dentro de cada buffers
-    vector<size_t> tamanos(k, 0);//Tamaño real de datos cargados en buffer
+    vector<ifstream> inputs(a); //Se define ifstream para cada archivo
+    vector<vector<int64_t>> buffers(a); //buffers para guardar bloques de tamaño B
+    vector<size_t> indices(a, 0);//Indices de posicion dentro de cada buffers
+    vector<size_t> tamanos(a, 0);//Tamaño real de datos cargados en buffer
 
     /* 
     Abrir todos los archivos y leer su primer bloque
     Primera parte de k-way
     */
-    for (size_t i = 0; i < k; ++i) {
+    for (size_t i = 0; i < a; ++i) {
         inputs[i].open(archivos_runs[i], ios::binary);
         buffers[i].resize(B / sizeof(int64_t));
         inputs[i].read(reinterpret_cast<char*>(buffers[i].data()), B);
@@ -71,7 +70,7 @@ void mergeRuns(vector<string>& archivos_runs, string archivo_salida, size_t B, s
         int idx_min = -1; //indice del buffer con numeros menores
 
         // Buscar el menor valor actual entre todos los buffers
-        for (size_t i = 0; i < k; ++i) {
+        for (size_t i = 0; i < a; ++i) {
             if (indices[i] < tamanos[i] && buffers[i][indices[i]] < minimo) {
                 minimo = buffers[i][indices[i]];
                 idx_min = i;
