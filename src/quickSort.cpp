@@ -5,6 +5,10 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
+
+
+size_t lecturas_disco = 0;
+size_t escrituras_disco = 0;
 using namespace std;
 
 void quicksortExterno(string archivo_entrada, string archivo_salida, size_t M, size_t B, size_t a) {
@@ -19,8 +23,10 @@ void quicksortExterno(string archivo_entrada, string archivo_salida, size_t M, s
         ifstream in(archivo_entrada, ios::binary);
         in.read(reinterpret_cast<char*>(datos.data()), N);
         in.close();
+        lecturas_disco += (N + B - 1) / B;
         sort(datos.begin(), datos.end());
         ofstream salida(archivo_salida, ios::binary);
+        escrituras_disco += (N + B - 1) / B;
         salida.write(reinterpret_cast<char*>(datos.data()), N);
         salida.close();
         return;
@@ -35,6 +41,7 @@ void quicksortExterno(string archivo_entrada, string archivo_salida, size_t M, s
         in.read(reinterpret_cast<char*>(&muestra[i]), sizeof(int64_t));
     }
     in.close();
+    lecturas_disco += a;
     sort(muestra.begin(), muestra.end());
 
     // Particionar archivo en a+1 archivos temporales
@@ -46,6 +53,8 @@ void quicksortExterno(string archivo_entrada, string archivo_salida, size_t M, s
 
     vector<int64_t> buffer(B / sizeof(int64_t));
     while (original.read(reinterpret_cast<char*>(buffer.data()), B)) {
+        lecturas_disco++;
+        escrituras_disco++;
         size_t leidos = original.gcount() / sizeof(int64_t);
         for (size_t i = 0; i < leidos; ++i) {
             int64_t val = buffer[i];
@@ -58,6 +67,8 @@ void quicksortExterno(string archivo_entrada, string archivo_salida, size_t M, s
     // Último bloque parcial si quedó algo
     size_t leidos = original.gcount() / sizeof(int64_t);
     if (leidos > 0) {
+        lecturas_disco++;
+        escrituras_disco++;
         for (size_t i = 0; i < leidos; ++i) {
             int64_t val = buffer[i];
             size_t idx = 0;
@@ -78,10 +89,21 @@ void quicksortExterno(string archivo_entrada, string archivo_salida, size_t M, s
     ofstream final(archivo_salida, ios::binary);
     for (size_t i = 0; i <= a; ++i) {
         ifstream part("part_" + to_string(i) + ".bin", ios::binary);
+        part.seekg(0, ios::end);
+        size_t size_part = part.tellg();
+        part.seekg(0);
+        lecturas_disco += (size_part + B - 1) / B;
+        escrituras_disco += (size_part + B - 1) / B;
         final << part.rdbuf();
         part.close();
         remove(("part_" + to_string(i) + ".bin").c_str());
         remove(("salida_" + to_string(i) + ".bin").c_str());
     }
     final.close();
+
+    // Guardar el total de lecturas + escrituras en un archivo temporal
+    ofstream ios_temp("temp_ios.txt", ios::out);
+    ios_temp << (lecturas_disco + escrituras_disco);
+    ios_temp.close();
+
 }

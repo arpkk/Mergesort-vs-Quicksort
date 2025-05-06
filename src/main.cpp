@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <fstream>
 #include "ordenamientos.h"
 
 size_t mejorA (size_t M, size_t b) {
@@ -45,7 +46,8 @@ int main() {
     size_t M = 52428800; // memoria en bytes
     size_t B = 4096;      // tamaño del bloque en bytes
     size_t b = B / sizeof(int64_t);
-    size_t a = mejorA(M, b); //aridad
+    //size_t a = mejorA(M, b); //aridad
+    size_t a = 4;
     size_t N = M / sizeof(int64_t); // tamaño de archivo binario
 
 
@@ -146,13 +148,19 @@ int main() {
 
     M = 52428800; // 50MB en bytes
     double tiempoTotal = 0;
+    double promedioTiempo = 0;
 
     cout << "Se inicia 75 secuencias para QuickSort con M=" << M << ", N=" << N << ", B=" << B << ", b=" << b << "y a=" << a << "\n";
+
+    ofstream csvFile("resultados.csv");
+    csvFile << "Tiempo_promedio_segundos,Total_IOs\n";
 
     for (int mult = 4; mult <= 60; mult += 4) {
         size_t N = mult * M / sizeof(int64_t); // tamaño en MB, se divide en 8 para obtener la cantidad de int64_t
     
         cout << "Secuencia con N=" << N << "\n";
+
+        size_t totalIOs = 0;
 
         for (int i = 1; i <= 5; ++i) {
             string nombreEntrada = "entrada_" + to_string(mult) + "M_" + to_string(i) + ".bin";
@@ -163,11 +171,18 @@ int main() {
             auto inicio = chrono::high_resolution_clock::now();
             quicksortExterno(nombreEntrada, nombreSalida, M, b, a);
             auto fin = chrono::high_resolution_clock::now();
+
+            ifstream ios_in("temp_ios.txt");
+            size_t ios_actual = 0;
+            ios_in >> ios_actual;
+            ios_in.close();
+            totalIOs += ios_actual;
     
             chrono::duration<double> duracion = fin - inicio;
             cout << "N = " << mult << "M, Secuencia " << i << ": " << duracion.count() << " segundos\n";
             
             tiempoTotal += duracion.count();
+
 
             remove(nombreEntrada.c_str());
             remove(nombreSalida.c_str());
@@ -176,10 +191,13 @@ int main() {
                 if (remove(runfile.c_str()) != 0) break;
             }
         }
-
+        promedioTiempo = tiempoTotal / 5;
+        csvFile << N << "," << promedioTiempo << "," << totalIOs << "\n";
         tiempoTotal = 0;
 
     }
+    remove("temp_ios.txt");
+    csvFile.close();
 
     return 0;
 }
