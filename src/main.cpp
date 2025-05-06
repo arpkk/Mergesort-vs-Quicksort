@@ -2,20 +2,20 @@
 #include <chrono>
 #include "ordenamientos.h"
 
-size_t mejorA (size_t M, size_t B) {
+size_t mejorA (size_t M, size_t b) {
     size_t mejorA = 2;
+    size_t N = 62914560 / sizeof(int64_t);
     double mejorTiempo = numeric_limits<double>::max();
     //size_t N_a = 60 * 1024 * 1024; // 60 millones de enteros
     //size_t N_a = 60 * 1024; // 60 mil de enteros
-    size_t N_a = 2;
     
-    crearArchivo("entrada_para_a.bin", N_a);
+    crearArchivo("entrada_para_a.bin", N);
 
     for (size_t a = 2; a <= 512; a *= 2) {  // prueba potencias de 2 hasta b = 64
         string salidaA = "salida_para_a.bin";
 
         auto inicio = chrono::high_resolution_clock::now();
-        mergesortExterno("entrada_para_a.bin", salidaA, M, B, a);
+        mergesortExterno("entrada_para_a.bin", salidaA, M, b, a);
         auto fin = chrono::high_resolution_clock::now();
 
         chrono::duration<double> duracion = fin - inicio;
@@ -40,27 +40,31 @@ size_t mejorA (size_t M, size_t B) {
 }
 
 int main() {
-    cout << "\n\n-----------------------Datos Entrada-----------------------\n\n";
-    crearArchivo("numeros.bin", 100);
-    vector<int64_t> datos = leerEscribirBloque("numeros.bin", 512);
-    for (int64_t n : datos) {
-        cout << n << " ";
-    }
 
     cout << "\n\n-----------------------Búsqueda binaria para mejor valor de a-----------------------\n\n";
     size_t M = 52428800; // memoria en bytes
     size_t B = 4096;      // tamaño del bloque en bytes
-    size_t a = mejorA(M, B); //aridad
+    size_t b = B / sizeof(int64_t);
+    size_t a = mejorA(M, b); //aridad
+    size_t N = M / sizeof(int64_t); // tamaño de archivo binario
+
+
+    cout << "\n\n-----------------------Datos Entrada-----------------------\n\n";
+    crearArchivo("numeros.bin", N);
+    /*vector<int64_t> datos = leerArchivo("numeros.bin", b);
+    for (int64_t n : datos) {
+        cout << n << " ";
+    }
+    */
 
     cout << "\n\n-----------------------Datos Salida MergeSort-----------------------\n\n";
-
-    size_t N = 4194304; // cantidad de enteros
     
-    mergesortExterno("numeros.bin", "salida.bin", M, B, a);
-    vector<int64_t> datosSalida = leerEscribirBloque("salida.bin", 512);
+    mergesortExterno("numeros.bin", "salida.bin", M, b, a);
+    /*vector<int64_t> datosSalida = leerArchivo("salida.bin", b);
     for (int64_t n : datosSalida) {
         cout << n << " ";
     }
+    */
 
     cout << "\n\n-----------------------Datos Salida 5 secuencias MergeSort-----------------------\n\n";
 
@@ -71,7 +75,7 @@ int main() {
         crearArchivo(nombreEntrada, N); // genera N números aleatorios de 64 bits
 
         auto inicio = chrono::high_resolution_clock::now();
-        mergesortExterno(nombreEntrada, nombreSalida, M, B, a);
+        mergesortExterno(nombreEntrada, nombreSalida, M, b, a);
         auto fin = chrono::high_resolution_clock::now();
 
         chrono::duration<double> duracion = fin - inicio;
@@ -84,7 +88,6 @@ int main() {
     /*cout << "\n\n-----------------------Datos Salida 5 4M, 8M, ..., 60M MergeSort-----------------------\n\n";
 
     M = 52428800; // 50MB en bytes
-    B = 512;      // tamaño del bloque en bytes
     
     for (int mult = 4; mult <= 60; mult += 4) {
         size_t N = mult * M; // cantidad de elementos
@@ -96,7 +99,7 @@ int main() {
             crearArchivo(nombreEntrada, N); // genera N números aleatorios de 64 bits
     
             auto inicio = chrono::high_resolution_clock::now();
-            mergesortExterno(nombreEntrada, nombreSalida, M, B, a);
+            mergesortExterno(nombreEntrada, nombreSalida, M, b, a);
             auto fin = chrono::high_resolution_clock::now();
     
             chrono::duration<double> duracion = fin - inicio;
@@ -113,11 +116,12 @@ int main() {
 
     cout << "\n\n-----------------------Datos Salida QuickSort-----------------------\n\n";
     
-    quicksortExterno("numeros.bin", "salida.bin", M, B, a);
-    vector<int64_t> datosSalida1 = leerEscribirBloque("salida.bin", 512);
+    quicksortExterno("numeros.bin", "salida.bin", M, b, a);
+    /*vector<int64_t> datosSalida1 = leerArchivo("salida.bin", b);
     for (int64_t n : datosSalida1) {
         cout << n << " ";
     }
+    */
 
     cout << "\n\n-----------------------Datos Salida 5 secuencias QuickSort-----------------------\n\n";
 
@@ -128,7 +132,7 @@ int main() {
         crearArchivo(nombreEntrada, N); // genera N números aleatorios de 64 bits
 
         auto inicio = chrono::high_resolution_clock::now();
-        quicksortExterno(nombreEntrada, nombreSalida, M, B, a);
+        quicksortExterno(nombreEntrada, nombreSalida, M, b, a);
         auto fin = chrono::high_resolution_clock::now();
 
         chrono::duration<double> duracion = fin - inicio;
@@ -141,11 +145,15 @@ int main() {
     cout << "\n\n-----------------------Datos Salida 5 4M, 8M, ..., 60M QuickSort-----------------------\n\n";
 
     M = 52428800; // 50MB en bytes
-    B = 512;      // tamaño del bloque en bytes
-    
+    double tiempoTotal = 0;
+
+    cout << "Se inicia 75 secuencias para QuickSort con M=" << M << ", N=" << N << ", B=" << B << ", b=" << b << "y a=" << a << "\n";
+
     for (int mult = 4; mult <= 60; mult += 4) {
-        size_t N = mult * M; // cantidad de elementos
+        size_t N = mult * M / sizeof(int64_t); // tamaño en MB, se divide en 8 para obtener la cantidad de int64_t
     
+        cout << "Secuencia con N=" << N << "\n";
+
         for (int i = 1; i <= 5; ++i) {
             string nombreEntrada = "entrada_" + to_string(mult) + "M_" + to_string(i) + ".bin";
             string nombreSalida = "salida_" + to_string(mult) + "M_" + to_string(i) + ".bin";
@@ -153,12 +161,14 @@ int main() {
             crearArchivo(nombreEntrada, N); // genera N números aleatorios de 64 bits
     
             auto inicio = chrono::high_resolution_clock::now();
-            quicksortExterno(nombreEntrada, nombreSalida, M, B, a);
+            quicksortExterno(nombreEntrada, nombreSalida, M, b, a);
             auto fin = chrono::high_resolution_clock::now();
     
             chrono::duration<double> duracion = fin - inicio;
             cout << "N = " << mult << "M, Secuencia " << i << ": " << duracion.count() << " segundos\n";
             
+            tiempoTotal += duracion.count();
+
             remove(nombreEntrada.c_str());
             remove(nombreSalida.c_str());
             for (int j = 0; ; ++j) {
@@ -166,6 +176,9 @@ int main() {
                 if (remove(runfile.c_str()) != 0) break;
             }
         }
+
+        tiempoTotal = 0;
+
     }
 
     return 0;
