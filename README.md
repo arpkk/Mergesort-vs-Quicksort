@@ -42,7 +42,7 @@ Este repositorio contiene una implementación en C++ de los algoritmos de **Merg
 
 2. **Compilar el Proyecto**
    ```bash
-   ./ordenar
+   g++ src/main.cpp src/archivoBinario.cpp src/mergeSort.cpp src/quickSort.cpp -o ordenar
    ```
 
 3. **Ejecución**
