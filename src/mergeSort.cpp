@@ -51,6 +51,9 @@ void mergeRuns(vector<string>& archivos_runs, string archivo_salida, size_t B, s
     vector<size_t> indices(a, 0);//Indices de posicion dentro de cada buffers
     vector<size_t> tamanos(a, 0);//Tamaño real de datos cargados en buffer
 
+    size_t lecturas_disco = 0;
+    size_t escrituras_disco = 0;
+
     /* 
     Abrir todos los archivos y leer su primer bloque
     Primera parte de k-way
@@ -59,6 +62,7 @@ void mergeRuns(vector<string>& archivos_runs, string archivo_salida, size_t B, s
         inputs[i].open(archivos_runs[i], ios::binary);
         buffers[i].resize(B / sizeof(int64_t));
         inputs[i].read(reinterpret_cast<char*>(buffers[i].data()), B);
+        lecturas_disco++;
         tamanos[i] = inputs[i].gcount() / sizeof(int64_t);//Bits que se leyeron realmente
         indices[i] = 0;
     }
@@ -82,11 +86,13 @@ void mergeRuns(vector<string>& archivos_runs, string archivo_salida, size_t B, s
 
         // Escribir el mínimo en el archivo de salida
         salida.write(reinterpret_cast<char*>(&minimo), sizeof(int64_t));
+        escrituras_disco++;
         indices[idx_min]++;
 
         // Si el buffer se vació, cargar otro bloque
         if (indices[idx_min] == tamanos[idx_min]) {
             inputs[idx_min].read(reinterpret_cast<char*>(buffers[idx_min].data()), B);
+            lecturas_disco++;
             tamanos[idx_min] = inputs[idx_min].gcount() / sizeof(int64_t);
             indices[idx_min] = 0;
         }
@@ -94,6 +100,10 @@ void mergeRuns(vector<string>& archivos_runs, string archivo_salida, size_t B, s
 
     salida.close();
     for (auto& in : inputs) in.close();
+
+    ofstream ios_temp("temp_ios.txt", ios::out);
+    ios_temp << (lecturas_disco + escrituras_disco);
+    ios_temp.close();
 }
 
 void mergesortExterno(string archivo_entrada, string archivo_salida, size_t M, size_t B, size_t a) {

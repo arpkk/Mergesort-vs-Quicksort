@@ -31,8 +31,6 @@
 *.exe
 *.out
 *.app
-*.bin
-*.csv
 
 #vs code
 .vscode
@@ -40,3 +38,8 @@
 #compile
 src/main
 ordenar
+
+#files
+*.bin
+*.csv
+*.txt

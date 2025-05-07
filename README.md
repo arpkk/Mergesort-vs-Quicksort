@@ -16,7 +16,11 @@ Este repositorio contiene una implementación en C++ de los algoritmos de **Merg
 
 ### Estructura del Proyecto
 
-- `src/` - Contiene la implementación en C++ de los algoritmos Mergesort Externo y Quicksort Externo.
+- `src/` - Contiene la implementación en C++ de los algoritmos Mergesort Externo, Quicksort Externo y otros.
+   - **archivoBinario.cpp:** Incluye funciones como crear archivo binario y otro para leer los archivos binarios.
+   - **mergeSort.cpp:** Contiene todas las funciones para realizar correctamente MergeSort con memoria secundaria.
+   - **QuickSort.cpp:** Contiene todas las funciones para realizar correctamente QuickSort con memoria secundaria.
+
 
 ### Requisitos
 
@@ -25,7 +29,23 @@ Este repositorio contiene una implementación en C++ de los algoritmos de **Merg
   
 ### Instrucciones de Ejecución
 
-1. **Compilar el Proyecto**
+1. **Uso de Docker**
    ```bash
-   g++ src/main.cpp src/archivoBinario.cpp src/mergeSort.cpp src/quickSort.cpp -o ordenar
+   docker run --rm -it -v "$PWD":/workspace pabloskewes/cc4102-cpp-env bash
+   ```
+   Para simular entorno con memoria limitada:
+
+   ```bash
+   docker run --rm -it -m 500m -v "$PWD":/workspace pabloskewes/cc4102-cpp-env bash
+   ```
+
+
+2. **Compilar el Proyecto**
+   ```bash
    ./ordenar
+   ```
+
+3. **Ejecución**
+   ```bash
+   ./ordenar
+   ```
