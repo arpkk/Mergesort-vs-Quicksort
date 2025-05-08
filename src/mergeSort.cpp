@@ -18,15 +18,15 @@ void generarRuns(string archivo_entrada, size_t M, size_t B, vector<string>& arc
         return;
     }
 
-    size_t cantidad_por_run = M / sizeof(int64_t);
+    size_t cantidad_por_run = M;
     vector<int64_t> buffer(cantidad_por_run);
 
     int i = 0;
-    while (entrada.read(reinterpret_cast<char*>(buffer.data()), M)) {
+    while (entrada.read(reinterpret_cast<char*>(buffer.data()), cantidad_por_run * sizeof(int64_t))) {
         sort(buffer.begin(), buffer.end());
         string nombre_run = "run_" + to_string(i++) + ".bin";
         ofstream run(nombre_run, ios::binary);
-        run.write(reinterpret_cast<char*>(buffer.data()), M);
+        run.write(reinterpret_cast<char*>(buffer.data()), cantidad_por_run * sizeof(int64_t));
         run.close();
         archivos_runs.push_back(nombre_run);
     }
@@ -60,7 +60,7 @@ void mergeRuns(vector<string>& archivos_runs, string archivo_salida, size_t B, s
     */
     for (size_t i = 0; i < a; ++i) {
         inputs[i].open(archivos_runs[i], ios::binary);
-        buffers[i].resize(B / sizeof(int64_t));
+        buffers[i].resize(B);
         inputs[i].read(reinterpret_cast<char*>(buffers[i].data()), B);
         lecturas_disco++;
         tamanos[i] = inputs[i].gcount() / sizeof(int64_t);//Bits que se leyeron realmente

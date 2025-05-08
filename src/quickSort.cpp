@@ -16,7 +16,7 @@ void quicksortExterno(string archivo_entrada, string archivo_salida, size_t M, s
     size_t N = entrada.tellg();
     entrada.close();
 
-    size_t n = N / sizeof(int64_t); //8 bytes 
+    size_t n = N; //8 bytes 
     if (N <= M) {
         // Cargar todo en memoria y ordenar directamente
         vector<int64_t> datos(n);

@@ -1,8 +1,10 @@
-
 #include <iostream>
 #include <chrono>
 #include <fstream>
+#include <iomanip>
 #include "ordenamientos.h"
+using namespace std;
+
 
 size_t mejorA (size_t M, size_t b) {
     cout << "\n\n-----------------------Búsqueda binaria para mejor valor de a-----------------------\n\n";
@@ -45,7 +47,7 @@ int main() {
     size_t M = 200; // M de tamaño 100 para la demostracion de ordenamiento
     size_t B = 4096; // tamaño del bloque en bytes
     size_t b = B / sizeof(int64_t);
-    size_t a = 8; //a fijo para la demostracion de ordenamiento, luego se calcula el mejor a.
+    size_t a = 64; //a fijo para la demostracion de ordenamiento, luego se calcula el mejor a.
     size_t N = M / sizeof(int64_t); // tamaño de archivo binario
 
 
@@ -75,6 +77,7 @@ int main() {
     /************************* Se cambian valores de variables para hacer pruebas reales *************************/
 
     //a = mejorA(M, b);
+    a = 64;
     M = 52428800 / sizeof(int64_t); // 50MB en bytes
     B = 4096; // tamaño del bloque en bytes
     b = B / sizeof(int64_t);
@@ -85,6 +88,7 @@ int main() {
 
     ofstream csvFileMerge("resultados_mergesort.csv");
     csvFileMerge << "N_elementos,Tiempo_promedio_segundos,Total_IOs\n";
+    csvFileMerge << std::fixed << std::setprecision(6);
 
     size_t totalIOs = 0;
     size_t ios_actual = 0;
@@ -129,7 +133,9 @@ int main() {
             }
         }
         double promedioTiempo = tiempoTotal / 5;
-        csvFileMerge << N << "," << promedioTiempo << "," << totalIOs << "\n";
+        csvFileMerge << N << ";" 
+             << to_string(promedioTiempo).replace(to_string(promedioTiempo).find('.'), 1, ",") 
+             << ";" << totalIOs << "\n";
     }
     csvFileMerge.close();
     remove("temp_ios.txt");
@@ -145,9 +151,10 @@ int main() {
 
     ofstream csvFile("resultados_quicksort.csv");
     csvFile << "N_elementos,Tiempo_promedio_segundos,Total_IOs\n";
+    csvFile << std::fixed << std::setprecision(6);
 
     for (int mult = 4; mult <= 60; mult += 4) {
-        size_t N = mult * M / sizeof(int64_t); // tamaño en MB, se divide en 8 para obtener la cantidad de int64_t
+        size_t N = mult * M; // tamaño en MB, se divide en 8 para obtener la cantidad de int64_t
     
         cout << "QuickSort: Secuencia con N=" << N << "\n";
 
@@ -185,7 +192,9 @@ int main() {
             }
         }
         promedioTiempo = tiempoTotal / 5;
-        csvFile << N << "," << promedioTiempo << "," << totalIOs << "\n";
+        csvFile << N << ";" 
+        << to_string(promedioTiempo).replace(to_string(promedioTiempo).find('.'), 1, ",") 
+        << ";" << totalIOs << "\n";
         tiempoTotal = 0;
     }
     remove("temp_ios.txt");
