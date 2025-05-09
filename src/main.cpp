@@ -76,8 +76,8 @@ int main() {
 
     /************************* Se cambian valores de variables para hacer pruebas reales *************************/
 
-    //a = mejorA(M, b);
-    a = 64;
+    a = mejorA(M, b);
+    //a = 64;
     M = 52428800 / sizeof(int64_t); // 50MB en bytes
     B = 4096; // tamaño del bloque en bytes
     b = B / sizeof(int64_t);
