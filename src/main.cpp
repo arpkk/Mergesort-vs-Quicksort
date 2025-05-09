@@ -87,7 +87,7 @@ int main() {
     cout << "Se inicia 75 secuencias para MergeSort con M = " << M << ", N = " << N << ", B = " << B << ", b = " << b << " y a = " << a << "\n";
 
     ofstream csvFileMerge("resultados_mergesort.csv");
-    csvFileMerge << "N_elementos,Tiempo_promedio_segundos,Total_IOs\n";
+    csvFileMerge << "N_elementos;Tiempo_promedio_segundos;Total_IOs\n";
     csvFileMerge << std::fixed << std::setprecision(6);
 
     size_t totalIOs = 0;
@@ -150,7 +150,7 @@ int main() {
     cout << "Se inicia 75 secuencias para QuickSort con M = " << M << ", N = " << N << ", B = " << B << ", b = " << b << " y a=" << a << "\n";
 
     ofstream csvFile("resultados_quicksort.csv");
-    csvFile << "N_elementos,Tiempo_promedio_segundos,Total_IOs\n";
+    csvFile << "N_elementos;Tiempo_promedio_segundos;Total_IOs\n";
     csvFile << std::fixed << std::setprecision(6);
 
     for (int mult = 4; mult <= 60; mult += 4) {
