@@ -76,11 +76,10 @@ int main() {
 
     /************************* Se cambian valores de variables para hacer pruebas reales *************************/
 
-    a = mejorA(M, b);
-    //a = 64;
+    a = mejorA(M, b); // Se obtiene la mejor aridad
     M = 52428800 / sizeof(int64_t); // 50MB en bytes
     B = 4096; // tamaño del bloque en bytes
-    b = B / sizeof(int64_t);
+    b = B / sizeof(int64_t); // cantidad en 64 bits que caben en un bloque
     
     cout << "\n\n-----------------------Datos Salida 5 4M, 8M, ..., 60M MergeSort-----------------------\n\n";
 
@@ -90,13 +89,14 @@ int main() {
     csvFileMerge << "N_elementos;Tiempo_promedio_segundos;Total_IOs\n";
     csvFileMerge << std::fixed << std::setprecision(6);
 
+    /************ Se declaran variables para mediciones ************/
     size_t totalIOs = 0;
     size_t ios_actual = 0;
     double tiempoTotal = 0;
     double promedioTiempo = 0;
     
     for (int mult = 4; mult <= 60; mult += 4) {
-        size_t N = mult * M; // cantidad de elementos
+        size_t N = mult * M; //4M, 8M,...,60M
 
         totalIOs = 0;
         ios_actual = 0;
@@ -142,6 +142,7 @@ int main() {
 
     cout << "\n\n-----------------------Datos Salida 5 4M, 8M, ..., 60M QuickSort-----------------------\n\n";
 
+    /************ Se declaran variables para mediciones ************/
     tiempoTotal = 0;
     promedioTiempo = 0;
     totalIOs = 0;
@@ -154,7 +155,7 @@ int main() {
     csvFile << std::fixed << std::setprecision(6);
 
     for (int mult = 4; mult <= 60; mult += 4) {
-        size_t N = mult * M; // tamaño en MB, se divide en 8 para obtener la cantidad de int64_t
+        size_t N = mult * M; // //4M, 8M,...,60M
     
         cout << "QuickSort: Secuencia con N=" << N << "\n";
 
