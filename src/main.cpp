@@ -5,7 +5,9 @@
 #include "ordenamientos.h"
 using namespace std;
 
-
+/*
+Encuentra el mejor valor de aridad a para mergesort externo probando potencias de 2 y midiendo el tiempo de ejecución.
+*/
 size_t mejorA (size_t M, size_t b) {
     cout << "\n\n-----------------------Búsqueda binaria para mejor valor de a-----------------------\n\n";
     size_t mejorA = 2;

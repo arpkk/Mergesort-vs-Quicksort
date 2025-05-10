@@ -8,9 +8,23 @@
 using namespace std;
 
 /*
-GenerarRuns: Se generan archivos temporales en memoria principal que contienen una parte del arreglo original
-Cuando el tamaño es menor o igual a M
-*/
+Implementación de Mergesort Externo para ordenamiento en memoria secundaria.
+
+Este código implementa un algoritmo de ordenamiento adaptado al modelo de memoria externa, donde los datos a ordenar no caben completamente en la memoria principal.
+El proceso consta de dos fases principales:
+1. `generarRuns`: Lee bloques de tamaño M desde el archivo de entrada, los ordena en memoria
+    y los guarda como archivos temporales ("runs" ya ordenados).
+2. `mergeRuns`: Mezcla los archivos temporales utilizando un merge k-way (de aridad `a`), leyendo
+    bloques de tamaño B desde cada archivo y escribiendo el resultado ordenado en el archivo final.
+También contabiliza y guarda en `temp_ios.txt` la cantidad total de accesos a disco (lecturas y escrituras).
+
+Parámetros:
+- archivo_entrada: nombre del archivo binario con los datos a ordenar.
+- archivo_salida: nombre del archivo binario de salida con los datos ordenados.
+- M: cantidad de enteros que caben en la memoria principal (run size).
+- B: tamaño del bloque leído desde disco (en enteros).
+- a: cantidad de archivos a mezclar simultáneamente (aridad del merge).
+ */
 void generarRuns(string archivo_entrada, size_t M, size_t B, vector<string>& archivos_runs) {
     ifstream entrada(archivo_entrada, ios::binary);
     if (!entrada.is_open()) {

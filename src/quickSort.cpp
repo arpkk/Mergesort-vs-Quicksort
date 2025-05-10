@@ -6,6 +6,21 @@
 #include <cstdint>
 #include <cstdlib>
 
+/*
+Implementación de Quicksort Externo para ordenamiento en memoria secundaria.
+Este algoritmo ordena un archivo binario de enteros (`archivo_entrada`) usando una variante de Quicksort adaptada a memoria externa.
+Utiliza una muestra aleatoria de tamaño `a` para seleccionar pivotes, divide los datos en `a+1` particiones, 
+ordena recursivamente cada partición y luego las combina en un archivo de salida (`archivo_salida`).
+
+Parámetros:
+- archivo_entrada: nombre del archivo binario con los datos a ordenar.
+- archivo_salida: nombre del archivo binario de salida con los datos ordenados.
+- M: Tamaño de la memoria principal disponible.
+- B: Tamaño del bloque de transferencia entre memoria y disco.
+- a: Cantidad de pivotes (determina cuántas particiones se crearán).
+
+También registra la cantidad total de accesos a disco (lecturas y escrituras) en un archivo temporal `temp_ios.txt`.
+ */
 
 size_t lecturas_disco = 0;
 size_t escrituras_disco = 0;
